@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MyJetWallet.Circle" Version="1.0.0" />
+    <PackageReference Include="MyJetWallet.Service.Circle.Signer.Client" Version="1.0.0" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.8.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Service.Circle.Wallets.Domain.Models\Service.Circle.Wallets.Domain.Models.csproj" />
+  </ItemGroup>
+
+</Project>
