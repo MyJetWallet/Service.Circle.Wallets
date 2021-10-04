@@ -72,6 +72,7 @@ namespace Service.Circle.Wallets
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterModule<SettingsModule>();
+            builder.RegisterModule<MyNoSqlModule>();
             builder.RegisterModule<ServiceModule>();
         }
     }

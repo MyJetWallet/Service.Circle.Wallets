@@ -154,7 +154,7 @@ namespace Service.Circle.Wallets.Services
                     PhoneNumber = response.Data.Metadata.PhoneNumber,
                     SessionId = response.Data.Metadata.SessionId,
                     IpAddress = response.Data.Metadata.IpAddress,
-                    Status = response.Data.Status,
+                    Status = response.Data.Status.ToString(),
                     Network = response.Data.Network,
                     Last4 = response.Data.Last4,
                     Bin = response.Data.Bin,
