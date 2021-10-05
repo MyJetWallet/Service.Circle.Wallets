@@ -1,5 +1,5 @@
 ﻿using Autofac;
-using Service.Circle.Signer.Grpc;
+using Service.Circle.Wallets.Grpc;
 
 // ReSharper disable UnusedMember.Global
 
