@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MyJetWallet.Circle.Models.Cards;
 using MyNoSqlServer.Abstractions;
 using Service.Circle.Signer.Grpc.Models;
 using Service.Circle.Wallets.Domain.Models;
@@ -12,6 +13,7 @@ using Service.Circle.Wallets.Grpc.Models;
 using Service.Circle.Wallets.Postgres;
 using Service.Circle.Wallets.Postgres.Models;
 using ICircleSignerCardsService = Service.Circle.Signer.Grpc.ICircleCardsService;
+using UpdateCardRequest = Service.Circle.Signer.Grpc.Models.UpdateCardRequest;
 
 // ReSharper disable InconsistentLogPropertyNaming
 
@@ -154,7 +156,7 @@ namespace Service.Circle.Wallets.Services
                     PhoneNumber = response.Data.Metadata.PhoneNumber,
                     SessionId = response.Data.Metadata.SessionId,
                     IpAddress = response.Data.Metadata.IpAddress,
-                    Status = response.Data.Status.ToString(),
+                    Status = ConverCardStatus(response.Data.Status),
                     Network = response.Data.Network,
                     Last4 = response.Data.Last4,
                     Bin = response.Data.Bin,
@@ -271,6 +273,21 @@ namespace Service.Circle.Wallets.Services
             {
                 _logger.LogInformation("Unable to update Circle card due to {error}", ex.Message);
                 return Grpc.Models.Response<CircleCard>.Error(ex.Message);
+            }
+        }
+
+        private CircleCardStatus ConverCardStatus(CardStatus status)
+        {
+            switch (status)
+            {
+                case CardStatus.Pending:
+                    return CircleCardStatus.Pending;
+                case CardStatus.Complete:
+                    return CircleCardStatus.Complete;
+                case CardStatus.Failed:
+                    return CircleCardStatus.Failed;
+                default:
+                    return CircleCardStatus.Pending;
             }
         }
     }

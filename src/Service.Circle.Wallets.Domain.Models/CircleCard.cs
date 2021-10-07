@@ -9,7 +9,7 @@ namespace Service.Circle.Wallets.Domain.Models
         public CircleCard(long id, string brokerId, string clientId, string circleCardId, string billingName,
             string billingCity, string billingCountry, string billingLine1, string billingLine2, string billingDistrict,
             string billingPostalCode, int expMonth, int expYear, string email, string phoneNumber, string sessionId,
-            string ipAddress, string status, string network, string last4, string bin, string issuerCountry,
+            string ipAddress, CircleCardStatus status, string network, string last4, string bin, string issuerCountry,
             CardFundingType fundingType, string fingerprint, CardVerificationError? errorCode, string createDate,
             string updateDate)
         {
@@ -94,7 +94,7 @@ namespace Service.Circle.Wallets.Domain.Models
         [DataMember(Order = 15)] public string PhoneNumber { get; set; }
         [DataMember(Order = 16)] public string SessionId { get; set; }
         [DataMember(Order = 17)] public string IpAddress { get; set; }
-        [DataMember(Order = 18)] public string Status { get; set; }
+        [DataMember(Order = 18)] public CircleCardStatus Status { get; set; }
         [DataMember(Order = 19)] public string Network { get; set; }
         [DataMember(Order = 20)] public string Last4 { get; set; }
         [DataMember(Order = 21)] public string Bin { get; set; }
