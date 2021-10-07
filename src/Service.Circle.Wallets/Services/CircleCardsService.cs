@@ -61,7 +61,7 @@ namespace Service.Circle.Wallets.Services
                     await _writer.InsertAsync(entity);
                     var card = clientCards.Find(e => e.Id == request.CardId);
                     return card != null
-                        ? Grpc.Models.Response<CircleCard>.Success(card)
+                        ? Grpc.Models.Response<CircleCard>.Success(new CircleCard(card))
                         : Grpc.Models.Response<CircleCard>.Error("Card not found");
                 }
 
@@ -192,7 +192,7 @@ namespace Service.Circle.Wallets.Services
                     await _writer.InsertAsync(entity);
                 }
 
-                return Grpc.Models.Response<CircleCard>.Success(clientCardEntity);
+                return Grpc.Models.Response<CircleCard>.Success(new CircleCard(clientCardEntity));
             }
             catch (Exception ex)
             {
@@ -261,7 +261,7 @@ namespace Service.Circle.Wallets.Services
                         }
                     }
                     
-                    return Grpc.Models.Response<CircleCard>.Success(existingPostgresEntity);
+                    return Grpc.Models.Response<CircleCard>.Success(new CircleCard(existingPostgresEntity));
                 }
                 else
                 {
