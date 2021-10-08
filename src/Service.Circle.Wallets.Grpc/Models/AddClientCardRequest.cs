@@ -19,10 +19,8 @@ namespace Service.Circle.Wallets.Grpc.Models
         [DataMember(Order = 12)] public string BillingPostalCode { get; set; }
         [DataMember(Order = 13)] public int ExpMonth { get; set; }
         [DataMember(Order = 14)] public int ExpYear { get; set; }
-        [DataMember(Order = 15)] public string Email { get; set; }
-        [DataMember(Order = 16)] public string PhoneNumber { get; set; }
-        [DataMember(Order = 17)] public string SessionId { get; set; }
-        [DataMember(Order = 18)] public string IpAddress { get; set; }
-        [DataMember(Order = 2)] public string CardName { get; set; }
+        [DataMember(Order = 15)] public string SessionId { get; set; }
+        [DataMember(Order = 16)] public string IpAddress { get; set; }
+        [DataMember(Order = 17)] public string CardName { get; set; }
     }
 }
