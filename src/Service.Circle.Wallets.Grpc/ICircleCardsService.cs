@@ -16,9 +16,9 @@ namespace Service.Circle.Wallets.Grpc
         Task<Response<List<CircleCard>>> GetCircleClientAllCards(GetClientAllCardsRequest request);
 
         [OperationContract]
-        Task<Response<CircleCard>> AddCircleCard(AddClientCardRequest card);
+        Task<Response<CircleCard>> AddCircleCard(AddClientCardRequest request);
 
         [OperationContract]
-        Task<Response<CircleCard>> UpdateCircleCard(UpdateClientCardRequest request);
+        Task<Response<bool>> DeleteCircleCard(DeleteClientCardRequest request);
     }
 }

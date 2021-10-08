@@ -4,9 +4,9 @@ namespace Service.Circle.Wallets.Grpc.Models
 {
     [DataContract]
     public class AddClientCardRequest
-    {  
+    {
         [DataMember(Order = 1)] public string BrokerId { get; set; }
-        [DataMember(Order = 2)] public string ClientId { get; set; }      
+        [DataMember(Order = 2)] public string ClientId { get; set; }
         [DataMember(Order = 3)] public string IdempotencyKey { get; set; }
         [DataMember(Order = 4)] public string KeyId { get; set; }
         [DataMember(Order = 5)] public string EncryptedData { get; set; }
@@ -23,5 +23,6 @@ namespace Service.Circle.Wallets.Grpc.Models
         [DataMember(Order = 16)] public string PhoneNumber { get; set; }
         [DataMember(Order = 17)] public string SessionId { get; set; }
         [DataMember(Order = 18)] public string IpAddress { get; set; }
+        [DataMember(Order = 2)] public string CardName { get; set; }
     }
 }

@@ -22,6 +22,7 @@ namespace Service.Circle.Wallets.Grpc.Models
         {
             return new Response<T>()
             {
+                Data = default,
                 ErrorMessage = errorMessage,
                 IsSuccess = false
             };

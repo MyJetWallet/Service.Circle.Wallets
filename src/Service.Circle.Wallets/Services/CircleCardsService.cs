@@ -13,7 +13,6 @@ using Service.Circle.Wallets.Grpc.Models;
 using Service.Circle.Wallets.Postgres;
 using Service.Circle.Wallets.Postgres.Models;
 using ICircleSignerCardsService = Service.Circle.Signer.Grpc.ICircleCardsService;
-using UpdateCardRequest = Service.Circle.Signer.Grpc.Models.UpdateCardRequest;
 
 // ReSharper disable InconsistentLogPropertyNaming
 
@@ -40,32 +39,38 @@ namespace Service.Circle.Wallets.Services
         {
             try
             {
-                var cachedClientCards = await _writer.GetAsync(
-                    CircleCardNoSqlEntity.GeneratePartitionKey(request.BrokerId),
-                    CircleCardNoSqlEntity.GenerateRowKey(request.ClientId));
-                if (cachedClientCards != null)
+                if (request.OnlyActive)
                 {
-                    var card = cachedClientCards.Cards.Find(e => e.Id == request.CardId);
-                    return card != null
-                        ? Grpc.Models.Response<CircleCard>.Success(card)
-                        : Grpc.Models.Response<CircleCard>.Error("Card not found");
+                    var cachedClientCards = await _writer.GetAsync(
+                        CircleCardNoSqlEntity.GeneratePartitionKey(request.BrokerId),
+                        CircleCardNoSqlEntity.GenerateRowKey(request.ClientId));
+                    if (cachedClientCards != null)
+                    {
+                        var cachedCard = cachedClientCards.Cards.Find(e => e.Id == request.CardId);
+                        return cachedCard != null
+                            ? Grpc.Models.Response<CircleCard>.Success(cachedCard)
+                            : Grpc.Models.Response<CircleCard>.Error("Card not found");
+                    }
                 }
 
                 await using var ctx = DatabaseContext.Create(_dbContextOptionsBuilder);
                 var clientCards = await ctx.Cards
-                    .Where(t => t.BrokerId == request.BrokerId && t.ClientId == request.ClientId).ToListAsync();
-                if (clientCards != null)
+                    .Where(t => t.BrokerId == request.BrokerId && t.ClientId == request.ClientId &&
+                                (!request.OnlyActive || t.IsActive))
+                    .ToListAsync();
+                if (clientCards == null) return Grpc.Models.Response<CircleCard>.Error("Card not found");
+
+                if (request.OnlyActive)
                 {
                     var entity = CircleCardNoSqlEntity.Create(request.BrokerId, request.ClientId,
                         clientCards.ConvertAll(e => new CircleCard(e)));
                     await _writer.InsertAsync(entity);
-                    var card = clientCards.Find(e => e.Id == request.CardId);
-                    return card != null
-                        ? Grpc.Models.Response<CircleCard>.Success(new CircleCard(card))
-                        : Grpc.Models.Response<CircleCard>.Error("Card not found");
                 }
 
-                return Grpc.Models.Response<CircleCard>.Error("Card not found");
+                var card = clientCards.Find(e => e.Id == request.CardId);
+                return card != null
+                    ? Grpc.Models.Response<CircleCard>.Success(new CircleCard(card))
+                    : Grpc.Models.Response<CircleCard>.Error("Card not found");
             }
             catch (Exception ex)
             {
@@ -79,24 +84,33 @@ namespace Service.Circle.Wallets.Services
         {
             try
             {
-                var cachedClientCards = await _writer.GetAsync(
-                    CircleCardNoSqlEntity.GeneratePartitionKey(request.BrokerId),
-                    CircleCardNoSqlEntity.GenerateRowKey(request.ClientId));
-                if (cachedClientCards != null)
+                if (request.OnlyActive)
                 {
-                    return Grpc.Models.Response<List<CircleCard>>.Success(cachedClientCards.Cards);
+                    var cachedClientCards = await _writer.GetAsync(
+                        CircleCardNoSqlEntity.GeneratePartitionKey(request.BrokerId),
+                        CircleCardNoSqlEntity.GenerateRowKey(request.ClientId));
+                    if (cachedClientCards != null)
+                    {
+                        return Grpc.Models.Response<List<CircleCard>>.Success(cachedClientCards.Cards);
+                    }
                 }
 
                 await using var ctx = DatabaseContext.Create(_dbContextOptionsBuilder);
                 var clientCards = await ctx.Cards
-                    .Where(t => t.BrokerId == request.BrokerId && t.ClientId == request.ClientId).ToListAsync();
+                    .Where(t => t.BrokerId == request.BrokerId && t.ClientId == request.ClientId &&
+                                (!request.OnlyActive || t.IsActive))
+                    .ToListAsync();
 
                 if (clientCards == null) return Grpc.Models.Response<List<CircleCard>>.Error("Card not found");
 
-                var entity = CircleCardNoSqlEntity.Create(request.BrokerId, request.ClientId,
-                    clientCards.ConvertAll(e => new CircleCard(e)));
-                await _writer.InsertAsync(entity);
-                return Grpc.Models.Response<List<CircleCard>>.Success(entity.Cards);
+                if (request.OnlyActive)
+                {
+                    var entity = CircleCardNoSqlEntity.Create(request.BrokerId, request.ClientId,
+                        clientCards.ConvertAll(e => new CircleCard(e)));
+                    await _writer.InsertAsync(entity);
+                }
+
+                return Grpc.Models.Response<List<CircleCard>>.Success(clientCards.ConvertAll(e => new CircleCard(e)));
             }
             catch (Exception ex)
             {
@@ -105,91 +119,94 @@ namespace Service.Circle.Wallets.Services
             }
         }
 
-        public async Task<Grpc.Models.Response<CircleCard>> AddCircleCard(AddClientCardRequest card)
+        public async Task<Grpc.Models.Response<CircleCard>> AddCircleCard(AddClientCardRequest request)
         {
             try
             {
                 var response = await _circleCardsService.AddCircleCard(
                     new AddCardRequest
                     {
-                        BrokerId = card.BrokerId,
-                        IdempotencyKey = card.IdempotencyKey,
-                        KeyId = card.KeyId,
-                        EncryptedData = card.EncryptedData,
-                        BillingName = card.BillingName,
-                        BillingCity = card.BillingCity,
-                        BillingCountry = card.BillingCountry,
-                        BillingLine1 = card.BillingLine1,
-                        BillingLine2 = card.BillingLine2,
-                        BillingDistrict = card.BillingDistrict,
-                        BillingPostalCode = card.BillingPostalCode,
-                        ExpMonth = card.ExpMonth,
-                        ExpYear = card.ExpYear,
-                        Email = card.Email,
-                        PhoneNumber = card.PhoneNumber,
-                        SessionId = card.SessionId,
-                        IpAddress = card.IpAddress
+                        BrokerId = request.BrokerId,
+                        ClientId = request.ClientId,
+                        IdempotencyKey = request.IdempotencyKey,
+                        KeyId = request.KeyId,
+                        EncryptedData = request.EncryptedData,
+                        BillingName = request.BillingName,
+                        BillingCity = request.BillingCity,
+                        BillingCountry = request.BillingCountry,
+                        BillingLine1 = request.BillingLine1,
+                        BillingLine2 = request.BillingLine2,
+                        BillingDistrict = request.BillingDistrict,
+                        BillingPostalCode = request.BillingPostalCode,
+                        ExpMonth = request.ExpMonth,
+                        ExpYear = request.ExpYear,
+                        SessionId = request.SessionId,
+                        IpAddress = request.IpAddress
                     });
 
+                await using var ctx = DatabaseContext.Create(_dbContextOptionsBuilder);
+                CircleCardEntity clientCardEntity;
                 if (!response.IsSuccess)
                 {
                     _logger.LogInformation("Unable to add Circle card due to {error}", response.ErrorMessage);
+                    clientCardEntity = new CircleCardEntity
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        BrokerId = request.BrokerId,
+                        ClientId = request.ClientId,
+                        CardName = request.CardName,
+                        Status = ConvertCardStatus(response.Data.Status),
+                        ErrorCode = ConvertCardVerificationError(response.Data.ErrorCode),
+                        IsActive = false,
+                        CreateDate = DateTime.Parse(response.Data.CreateDate),
+                        UpdateDate = DateTime.Parse(response.Data.UpdateDate)
+                    };
+                    await ctx.AddAsync(clientCardEntity);
+                    await ctx.SaveChangesAsync();
+
                     return Grpc.Models.Response<CircleCard>.Error(response.ErrorMessage);
                 }
 
-                await using var ctx = DatabaseContext.Create(_dbContextOptionsBuilder);
-                var clientCardEntity = new CircleCardEntity
+                clientCardEntity = new CircleCardEntity
                 {
-                    BrokerId = card.BrokerId,
-                    ClientId = card.ClientId,
+                    Id = Guid.NewGuid().ToString(),
+                    BrokerId = request.BrokerId,
+                    ClientId = request.ClientId,
+                    CardName = request.CardName,
                     CircleCardId = response.Data.Id,
-                    BillingName = response.Data.BillingDetails.Name,
-                    BillingCity = response.Data.BillingDetails.City,
-                    BillingCountry = response.Data.BillingDetails.Country,
-                    BillingLine1 = response.Data.BillingDetails.Line1,
-                    BillingLine2 = response.Data.BillingDetails.Line2,
-                    BillingDistrict = response.Data.BillingDetails.District,
-                    BillingPostalCode = response.Data.BillingDetails.PostalCode,
+                    Last4 = response.Data.Last4,
+                    Network = response.Data.Network,
                     ExpMonth = response.Data.ExpMonth,
                     ExpYear = response.Data.ExpYear,
-                    Email = response.Data.Metadata.Email,
-                    PhoneNumber = response.Data.Metadata.PhoneNumber,
-                    SessionId = response.Data.Metadata.SessionId,
-                    IpAddress = response.Data.Metadata.IpAddress,
-                    Status = ConverCardStatus(response.Data.Status),
-                    Network = response.Data.Network,
-                    Last4 = response.Data.Last4,
-                    Bin = response.Data.Bin,
-                    IssuerCountry = response.Data.IssuerCountry,
-                    FundingType = response.Data.FundingType,
-                    Fingerprint = response.Data.Fingerprint,
-                    ErrorCode = response.Data.ErrorCode,
-                    CreateDate = response.Data.CreateDate,
-                    UpdateDate = response.Data.CreateDate
+                    Status = ConvertCardStatus(response.Data.Status),
+                    ErrorCode = ConvertCardVerificationError(response.Data.ErrorCode),
+                    IsActive = ConvertCardStatus(response.Data.Status) == CircleCardStatus.Complete,
+                    CreateDate = DateTime.Parse(response.Data.CreateDate),
+                    UpdateDate = DateTime.Parse(response.Data.UpdateDate)
                 };
-                try
-                {
-                    await ctx.AddAsync(clientCardEntity);
-                    await ctx.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogInformation("Unable to save Circle card due to {error}", ex.Message);
-                    return Grpc.Models.Response<CircleCard>.Error(ex.Message);
-                }
 
-                var cachedClientCards = await _writer.GetAsync(
-                    CircleCardNoSqlEntity.GeneratePartitionKey(card.BrokerId),
-                    CircleCardNoSqlEntity.GenerateRowKey(card.ClientId));
-                if (cachedClientCards != null)
+                await ctx.AddAsync(clientCardEntity);
+                await ctx.SaveChangesAsync();
+
+                if (clientCardEntity.IsActive)
                 {
-                    cachedClientCards.Cards.Add(clientCardEntity);
+                    var cachedClientCards = await _writer.GetAsync(
+                        CircleCardNoSqlEntity.GeneratePartitionKey(request.BrokerId),
+                        CircleCardNoSqlEntity.GenerateRowKey(request.ClientId));
+                    if (cachedClientCards != null)
+                    {
+                        cachedClientCards.Cards.Add(clientCardEntity);
+                        await _writer.InsertOrReplaceAsync(cachedClientCards);
+                    }
+                    else
+                    {
+                        var entity = CircleCardNoSqlEntity.Create(request.BrokerId, request.ClientId,
+                            new List<CircleCard> { clientCardEntity });
+                        await _writer.InsertAsync(entity);
+                    }
                 }
                 else
                 {
-                    var entity = CircleCardNoSqlEntity.Create(card.BrokerId, card.ClientId,
-                        new List<CircleCard> { clientCardEntity });
-                    await _writer.InsertAsync(entity);
                 }
 
                 return Grpc.Models.Response<CircleCard>.Success(new CircleCard(clientCardEntity));
@@ -201,82 +218,49 @@ namespace Service.Circle.Wallets.Services
             }
         }
 
-        public async Task<Grpc.Models.Response<CircleCard>> UpdateCircleCard(
-            UpdateClientCardRequest request)
+        public async Task<Grpc.Models.Response<bool>> DeleteCircleCard(DeleteClientCardRequest request)
         {
             try
             {
-                var existingCard = await GetCircleClientCard(new GetClientCardRequest
+                var existingNoSqlEntity = await _writer.GetAsync(
+                    CircleCardNoSqlEntity.GeneratePartitionKey(request.BrokerId),
+                    CircleCardNoSqlEntity.GenerateRowKey(request.ClientId));
+                var card = existingNoSqlEntity?.Cards.Find(e => e.Id == request.CardId);
+                if (card != null)
                 {
-                    BrokerId = request.BrokerId,
-                    ClientId = request.ClientId,
-                    CardId = request.CardId
-                });
-                if (!existingCard.IsSuccess || existingCard.Data == null)
-                {
-                    _logger.LogInformation("Unable to update Circle card, card not found");
-                    return Grpc.Models.Response<CircleCard>.Error("Unable to update Circle card, card not found");
+                    existingNoSqlEntity.Cards.Remove(card);
+                    if (existingNoSqlEntity.Cards.Count > 0)
+                    {
+                        await _writer.InsertOrReplaceAsync(existingNoSqlEntity);
+                    }
+                    else
+                    {
+                        await _writer.DeleteAsync(existingNoSqlEntity.PartitionKey, existingNoSqlEntity.PartitionKey);
+                    }
                 }
 
-                var updateCardResponse = await _circleCardsService.UpdateCircleCard(new UpdateCardRequest
-                {
-                    BrokerId = request.BrokerId,
-                    CardId = existingCard.Data.CircleCardId,
-                    EncryptedData = request.EncryptedData,
-                    ExpMonth = request.ExpMonth,
-                    ExpYear = request.ExpYear,
-                    KeyId = request.KeyId
-                });
+                await using var ctx = DatabaseContext.Create(_dbContextOptionsBuilder);
+                var existingPostgresEntity = await ctx.Cards
+                    .Where(t => t.Id == request.CardId)
+                    .Where(t => t.BrokerId == request.BrokerId && t.ClientId == request.ClientId).FirstAsync();
 
-                if (updateCardResponse.IsSuccess)
-                {
-                    await using var ctx = DatabaseContext.Create(_dbContextOptionsBuilder);
-                    var existingPostgresEntity = await ctx.Cards
-                        .Where(t => t.Id == existingCard.Data.Id).FirstAsync();
-                    existingPostgresEntity.ExpMonth = request.ExpMonth;
-                    existingPostgresEntity.ExpYear = request.ExpYear;
-                    try
-                    {
-                        await ctx.UpdateAsync(existingPostgresEntity);
-                        await ctx.SaveChangesAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogInformation("Unable to save Circle card due to {error}", ex.Message);
-                        return Grpc.Models.Response<CircleCard>.Error(ex.Message);
-                    }
-                    
-                    var existingNoSqlEntity = await _writer.GetAsync(
-                        CircleCardNoSqlEntity.GeneratePartitionKey(request.BrokerId),
-                        CircleCardNoSqlEntity.GenerateRowKey(request.ClientId));
+                if (existingPostgresEntity == null) return Grpc.Models.Response<bool>.Success(true);
 
-                    if (existingNoSqlEntity != null)
-                    {
-                        var card = existingNoSqlEntity.Cards.Find(e => e.Id == existingCard.Data.Id);
-                        if (card != null)
-                        {
-                            card.ExpMonth = request.ExpMonth;
-                            card.ExpYear = request.ExpYear;
-                            await _writer.InsertOrReplaceAsync(existingNoSqlEntity);
-                        }
-                    }
-                    
-                    return Grpc.Models.Response<CircleCard>.Success(new CircleCard(existingPostgresEntity));
-                }
-                else
-                {
-                    _logger.LogInformation("Unable to update Circle card due to {error}", updateCardResponse.ErrorMessage);
-                    return Grpc.Models.Response<CircleCard>.Error(updateCardResponse.ErrorMessage);
-                }
+                existingPostgresEntity.IsActive = false;
+                existingPostgresEntity.UpdateDate = DateTime.Now;
+                await ctx.UpdateAsync(existingPostgresEntity);
+                await ctx.SaveChangesAsync();
+
+                return Grpc.Models.Response<bool>.Success(true);
             }
             catch (Exception ex)
             {
-                _logger.LogInformation("Unable to update Circle card due to {error}", ex.Message);
-                return Grpc.Models.Response<CircleCard>.Error(ex.Message);
+                _logger.LogInformation("Unable to delete Circle card due to {error}", ex.Message);
+                return Grpc.Models.Response<bool>.Error(ex.Message);
             }
         }
 
-        private CircleCardStatus ConverCardStatus(CardStatus status)
+        private CircleCardStatus ConvertCardStatus(CardStatus status)
         {
             switch (status)
             {
@@ -288,6 +272,41 @@ namespace Service.Circle.Wallets.Services
                     return CircleCardStatus.Failed;
                 default:
                     return CircleCardStatus.Pending;
+            }
+        }
+
+        private CircleCardVerificationError? ConvertCardVerificationError(CardVerificationError? error)
+        {
+            switch (error)
+            {
+                case CardVerificationError.CardFailed:
+                    return CircleCardVerificationError.CardFailed;
+                case CardVerificationError.CardAddressMismatch:
+                    return CircleCardVerificationError.CardAddressMismatch;
+                case CardVerificationError.CardZipMismatch:
+                    return CircleCardVerificationError.CardZipMismatch;
+                case CardVerificationError.CardCvvInvalid:
+                    return CircleCardVerificationError.CardCvvInvalid;
+                case CardVerificationError.CardExpired:
+                    return CircleCardVerificationError.CardExpired;
+                case CardVerificationError.VerificationFailed:
+                case CardVerificationError.VerificationFraudDetected:
+                case CardVerificationError.VerificationDenied:
+                case CardVerificationError.VerificationNotSupportedByIssuer:
+                case CardVerificationError.VerificationStoppedByIssuer:
+                case CardVerificationError.CardInvalid:
+                case CardVerificationError.CardLimitViolated:
+                case CardVerificationError.CardNotHonored:
+                case CardVerificationError.CardCvvRequired:
+                case CardVerificationError.CreditCardNotAllowed:
+                case CardVerificationError.CardAccountIneligible:
+                case CardVerificationError.CardNetworkUnsupported:
+                    _logger.LogWarning("Unsupported Card Verification error {error}", error.ToString());
+                    return CircleCardVerificationError.CardFailed;
+                case null:
+                    return null;
+                default:
+                    return CircleCardVerificationError.CardFailed;
             }
         }
     }

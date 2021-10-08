@@ -8,7 +8,8 @@ namespace Service.Circle.Wallets
     {
         private readonly ILogger<ApplicationLifetimeManager> _logger;
 
-        public ApplicationLifetimeManager(IHostApplicationLifetime appLifetime, ILogger<ApplicationLifetimeManager> logger)
+        public ApplicationLifetimeManager(IHostApplicationLifetime appLifetime,
+            ILogger<ApplicationLifetimeManager> logger)
             : base(appLifetime)
         {
             _logger = logger;

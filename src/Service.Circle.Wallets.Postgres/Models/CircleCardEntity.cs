@@ -2,8 +2,7 @@
 
 namespace Service.Circle.Wallets.Postgres.Models
 {
-    public class CircleCardEntity: CircleCard
+    public class CircleCardEntity : CircleCard
     {
-        
     }
 }

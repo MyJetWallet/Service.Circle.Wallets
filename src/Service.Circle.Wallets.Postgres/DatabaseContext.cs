@@ -49,36 +49,25 @@ namespace Service.Circle.Wallets.Postgres
         private void SetCardEntry(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CircleCardEntity>().ToTable(TransfersTableName);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.Id).UseIdentityColumn();
+            modelBuilder.Entity<CircleCardEntity>().Property(e => e.Id);
             modelBuilder.Entity<CircleCardEntity>().HasKey(e => e.Id);
+            modelBuilder.Entity<CircleCardEntity>().HasIndex(e => e.Id).IsUnique();
             modelBuilder.Entity<CircleCardEntity>().Property(e => e.BrokerId).HasMaxLength(128);
             modelBuilder.Entity<CircleCardEntity>().Property(e => e.ClientId).HasMaxLength(128);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.CircleCardId).HasMaxLength(128);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.BillingName).HasMaxLength(512);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.BillingCity).HasMaxLength(512);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.BillingCountry).HasMaxLength(128);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.BillingLine1).HasMaxLength(1024);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.BillingLine2).HasMaxLength(1024).IsRequired(false);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.BillingDistrict).HasMaxLength(1024);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.BillingPostalCode).HasMaxLength(128);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.ExpMonth);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.ExpYear);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.Email).HasMaxLength(1024);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.PhoneNumber).HasMaxLength(128);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.SessionId).HasMaxLength(256).IsRequired(false);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.IpAddress).HasMaxLength(256).IsRequired(false);
+            modelBuilder.Entity<CircleCardEntity>().Property(e => e.CardName).HasMaxLength(128);
+            modelBuilder.Entity<CircleCardEntity>().Property(e => e.CircleCardId).HasMaxLength(128).IsRequired(false);
+            modelBuilder.Entity<CircleCardEntity>().Property(e => e.ExpMonth).IsRequired(false);
+            modelBuilder.Entity<CircleCardEntity>().Property(e => e.ExpYear).IsRequired(false);
             modelBuilder.Entity<CircleCardEntity>().Property(e => e.Status);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.Network).HasMaxLength(128);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.Last4).HasMaxLength(64);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.Bin).HasMaxLength(64);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.IssuerCountry).HasMaxLength(128);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.FundingType);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.Fingerprint).HasMaxLength(1024);
+            modelBuilder.Entity<CircleCardEntity>().Property(e => e.Network).HasMaxLength(128).IsRequired(false);
+            modelBuilder.Entity<CircleCardEntity>().Property(e => e.Last4).HasMaxLength(64).IsRequired(false);
             modelBuilder.Entity<CircleCardEntity>().Property(e => e.ErrorCode).IsRequired(false);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.CreateDate).IsRequired(false);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.UpdateDate).IsRequired(false);
-            
-            modelBuilder.Entity<CircleCardEntity>().HasIndex(e => new {e.BrokerId, e.ClientId});
+            modelBuilder.Entity<CircleCardEntity>().Property(e => e.IsActive);
+            modelBuilder.Entity<CircleCardEntity>().Property(e => e.CreateDate);
+            modelBuilder.Entity<CircleCardEntity>().Property(e => e.UpdateDate);
+
+            modelBuilder.Entity<CircleCardEntity>().HasIndex(e => new { e.BrokerId, e.ClientId });
+            modelBuilder.Entity<CircleCardEntity>().HasIndex(e => new { e.BrokerId, e.ClientId, e.IsActive });
             modelBuilder.Entity<CircleCardEntity>().HasIndex(e => e.CircleCardId).IsUnique();
         }
 
