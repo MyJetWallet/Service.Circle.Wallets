@@ -180,7 +180,7 @@ namespace Service.Circle.Wallets.Services
                     ExpYear = response.Data.ExpYear,
                     Status = ConvertCardStatus(response.Data.Status),
                     ErrorCode = ConvertCardVerificationError(response.Data.ErrorCode),
-                    IsActive = ConvertCardStatus(response.Data.Status) == CircleCardStatus.Complete,
+                    IsActive = ConvertCardStatus(response.Data.Status) != CircleCardStatus.Failed,
                     CreateDate = DateTime.Parse(response.Data.CreateDate),
                     UpdateDate = DateTime.Parse(response.Data.UpdateDate)
                 };
