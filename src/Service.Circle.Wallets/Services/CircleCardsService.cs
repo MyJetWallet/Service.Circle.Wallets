@@ -155,11 +155,11 @@ namespace Service.Circle.Wallets.Services
                         BrokerId = request.BrokerId,
                         ClientId = request.ClientId,
                         CardName = request.CardName,
-                        Status = ConvertCardStatus(response.Data.Status),
-                        ErrorCode = ConvertCardVerificationError(response.Data.ErrorCode),
+                        Status = CircleCardStatus.Failed,
+                        ErrorCode = null,
                         IsActive = false,
-                        CreateDate = DateTime.Parse(response.Data.CreateDate),
-                        UpdateDate = DateTime.Parse(response.Data.UpdateDate)
+                        CreateDate = DateTime.Now,
+                        UpdateDate = DateTime.Now
                     };
                     await ctx.AddAsync(clientCardEntity);
                     await ctx.SaveChangesAsync();
@@ -205,9 +205,6 @@ namespace Service.Circle.Wallets.Services
                         await _writer.InsertAsync(entity);
                     }
                 }
-                else
-                {
-                }
 
                 return Grpc.Models.Response<CircleCard>.Success(new CircleCard(clientCardEntity));
             }
@@ -235,7 +232,7 @@ namespace Service.Circle.Wallets.Services
                     }
                     else
                     {
-                        await _writer.DeleteAsync(existingNoSqlEntity.PartitionKey, existingNoSqlEntity.PartitionKey);
+                        await _writer.DeleteAsync(existingNoSqlEntity.PartitionKey, existingNoSqlEntity.RowKey);
                     }
                 }
 
