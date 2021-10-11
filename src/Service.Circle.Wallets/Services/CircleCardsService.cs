@@ -46,7 +46,7 @@ namespace Service.Circle.Wallets.Services
                         CircleCardNoSqlEntity.GenerateRowKey(request.ClientId));
                     if (cachedClientCards != null)
                     {
-                        var cachedCard = cachedClientCards.Cards.Find(e => e.Id == request.CardId);
+                        var cachedCard = cachedClientCards.Cards.Find(e => e.Id == request.CardId && e.IsActive);
                         return cachedCard != null
                             ? Grpc.Models.Response<CircleCard>.Success(cachedCard)
                             : Grpc.Models.Response<CircleCard>.Error("Card not found");
@@ -67,7 +67,7 @@ namespace Service.Circle.Wallets.Services
                     await _writer.InsertAsync(entity);
                 }
 
-                var card = clientCards.Find(e => e.Id == request.CardId);
+                var card = clientCards.Find(e => e.Id == request.CardId && e.IsActive);
                 return card != null
                     ? Grpc.Models.Response<CircleCard>.Success(new CircleCard(card))
                     : Grpc.Models.Response<CircleCard>.Error("Card not found");
@@ -91,7 +91,7 @@ namespace Service.Circle.Wallets.Services
                         CircleCardNoSqlEntity.GenerateRowKey(request.ClientId));
                     if (cachedClientCards != null)
                     {
-                        return Grpc.Models.Response<List<CircleCard>>.Success(cachedClientCards.Cards);
+                        return Grpc.Models.Response<List<CircleCard>>.Success(cachedClientCards.Cards.FindAll(e => e.IsActive));
                     }
                 }
 
