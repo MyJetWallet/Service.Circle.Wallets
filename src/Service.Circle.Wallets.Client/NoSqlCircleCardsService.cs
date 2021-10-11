@@ -24,7 +24,7 @@ namespace Service.Circle.Wallets.Client
             if (!request.OnlyActive) return await _grpcService.GetCircleClientCard(request);
 
             var entity = _reader.Get(CircleCardNoSqlEntity.GeneratePartitionKey(request.BrokerId),
-                CircleCardNoSqlEntity.GenerateRowKey(request.ClientId))?.Cards.Find(e => e.Id == request.CardId);
+                CircleCardNoSqlEntity.GenerateRowKey(request.ClientId))?.Cards.Find(e => e.Id == request.CardId && e.IsActive);
 
             if (entity != null)
                 return Response<CircleCard>.Success(entity);
@@ -37,7 +37,7 @@ namespace Service.Circle.Wallets.Client
             if (!request.OnlyActive) return await _grpcService.GetCircleClientAllCards(request);
 
             var entity = _reader.Get(CircleCardNoSqlEntity.GeneratePartitionKey(request.BrokerId),
-                CircleCardNoSqlEntity.GenerateRowKey(request.ClientId))?.Cards;
+                CircleCardNoSqlEntity.GenerateRowKey(request.ClientId))?.Cards.FindAll(e => e.IsActive);
 
             if (entity != null)
                 return Response<List<CircleCard>>.Success(entity);
