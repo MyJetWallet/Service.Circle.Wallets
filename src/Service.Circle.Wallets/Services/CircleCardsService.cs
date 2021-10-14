@@ -156,7 +156,7 @@ namespace Service.Circle.Wallets.Services
                         ClientId = request.ClientId,
                         CardName = request.CardName,
                         Status = CircleCardStatus.Failed,
-                        ErrorCode = null,
+                        Error = response.ErrorMessage[..2048],
                         IsActive = false,
                         CreateDate = DateTime.Now,
                         UpdateDate = DateTime.Now
@@ -179,7 +179,7 @@ namespace Service.Circle.Wallets.Services
                     ExpMonth = response.Data.ExpMonth,
                     ExpYear = response.Data.ExpYear,
                     Status = ConvertCardStatus(response.Data.Status),
-                    ErrorCode = ConvertCardVerificationError(response.Data.ErrorCode),
+                    Error = ConvertCardVerificationError(response.Data.ErrorCode)?.ToString(),
                     IsActive = ConvertCardStatus(response.Data.Status) != CircleCardStatus.Failed,
                     CreateDate = DateTime.Parse(response.Data.CreateDate),
                     UpdateDate = DateTime.Parse(response.Data.UpdateDate)

@@ -9,7 +9,7 @@ namespace Service.Circle.Wallets.Domain.Models
     {
         public CircleCard(string id, string brokerId, string clientId, string cardName, [CanBeNull] string circleCardId,
             [CanBeNull] string last4, [CanBeNull] string network, int? expMonth, int? expYear, CircleCardStatus status,
-            CircleCardVerificationError? errorCode, bool isActive, DateTime createDate, DateTime updateDate)
+            string? error, bool isActive, DateTime createDate, DateTime updateDate)
         {
             Id = id;
             BrokerId = brokerId;
@@ -21,7 +21,7 @@ namespace Service.Circle.Wallets.Domain.Models
             ExpMonth = expMonth;
             ExpYear = expYear;
             Status = status;
-            ErrorCode = errorCode;
+            Error = error;
             IsActive = isActive;
             CreateDate = createDate;
             UpdateDate = updateDate;
@@ -39,7 +39,7 @@ namespace Service.Circle.Wallets.Domain.Models
             ExpMonth = card.ExpMonth;
             ExpYear = card.ExpYear;
             Status = card.Status;
-            ErrorCode = card.ErrorCode;
+            Error = card.Error;
             IsActive = card.IsActive;
             CreateDate = card.CreateDate;
             UpdateDate = card.UpdateDate;
@@ -59,7 +59,7 @@ namespace Service.Circle.Wallets.Domain.Models
         [DataMember(Order = 8)] public int? ExpMonth { get; set; }
         [DataMember(Order = 9)] public int? ExpYear { get; set; }
         [DataMember(Order = 10)] public CircleCardStatus Status { get; set; }
-        [DataMember(Order = 11)] public CircleCardVerificationError? ErrorCode { get; set; }
+        [DataMember(Order = 11)] public string Error { get; set; }
         [DataMember(Order = 12)] public bool IsActive { get; set; }
         [DataMember(Order = 13)] public DateTime CreateDate { get; set; }
         [DataMember(Order = 14)] public DateTime UpdateDate { get; set; }

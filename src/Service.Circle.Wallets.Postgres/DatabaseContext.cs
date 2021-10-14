@@ -61,7 +61,7 @@ namespace Service.Circle.Wallets.Postgres
             modelBuilder.Entity<CircleCardEntity>().Property(e => e.Status);
             modelBuilder.Entity<CircleCardEntity>().Property(e => e.Network).HasMaxLength(128).IsRequired(false);
             modelBuilder.Entity<CircleCardEntity>().Property(e => e.Last4).HasMaxLength(64).IsRequired(false);
-            modelBuilder.Entity<CircleCardEntity>().Property(e => e.ErrorCode).IsRequired(false);
+            modelBuilder.Entity<CircleCardEntity>().Property(e => e.Error).HasMaxLength(2048).IsRequired(false);
             modelBuilder.Entity<CircleCardEntity>().Property(e => e.IsActive);
             modelBuilder.Entity<CircleCardEntity>().Property(e => e.CreateDate);
             modelBuilder.Entity<CircleCardEntity>().Property(e => e.UpdateDate);
