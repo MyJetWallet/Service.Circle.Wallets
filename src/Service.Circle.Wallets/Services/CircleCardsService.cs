@@ -156,7 +156,7 @@ namespace Service.Circle.Wallets.Services
                         ClientId = request.ClientId,
                         CardName = request.CardName,
                         Status = CircleCardStatus.Failed,
-                        Error = response.ErrorMessage[..2048],
+                        Error = response.ErrorMessage,
                         IsActive = false,
                         CreateDate = DateTime.Now,
                         UpdateDate = DateTime.Now
