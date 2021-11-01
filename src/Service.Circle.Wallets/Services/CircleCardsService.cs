@@ -172,7 +172,7 @@ namespace Service.Circle.Wallets.Services
                     Id = Guid.NewGuid().ToString(),
                     BrokerId = request.BrokerId,
                     ClientId = request.ClientId,
-                    CardName = request.CardName,
+                    CardName = !string.IsNullOrEmpty(request.CardName) ? request.CardName : $"{response.Data.Network} *{response.Data.Last4}",
                     CircleCardId = response.Data.Id,
                     Last4 = response.Data.Last4,
                     Network = response.Data.Network,
@@ -239,7 +239,7 @@ namespace Service.Circle.Wallets.Services
                 await using var ctx = DatabaseContext.Create(_dbContextOptionsBuilder);
                 var existingPostgresEntity = await ctx.Cards
                     .Where(t => t.Id == request.CardId)
-                    .Where(t => t.BrokerId == request.BrokerId && t.ClientId == request.ClientId).FirstAsync();
+                    .Where(t => t.BrokerId == request.BrokerId && t.ClientId == request.ClientId).FirstOrDefaultAsync();
 
                 if (existingPostgresEntity == null) return Grpc.Models.Response<bool>.Success(true);
 
