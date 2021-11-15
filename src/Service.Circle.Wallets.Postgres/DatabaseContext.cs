@@ -3,12 +3,13 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MyJetWallet.Sdk.Postgres;
 using MyJetWallet.Sdk.Service;
 using Service.Circle.Wallets.Postgres.Models;
 
 namespace Service.Circle.Wallets.Postgres
 {
-    public class DatabaseContext : DbContext
+    public class DatabaseContext : MyDbContext
     {
         public const string Schema = "circle";
 
@@ -21,7 +22,6 @@ namespace Service.Circle.Wallets.Postgres
         }
 
         public DbSet<CircleCardEntity> Cards { get; set; }
-        public static ILoggerFactory LoggerFactory { get; set; }
 
         public static DatabaseContext Create(DbContextOptionsBuilder<DatabaseContext> options)
         {
@@ -30,11 +30,6 @@ namespace Service.Circle.Wallets.Postgres
             var ctx = new DatabaseContext(options.Options) { _activity = activity };
 
             return ctx;
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (LoggerFactory != null) optionsBuilder.UseLoggerFactory(LoggerFactory).EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
