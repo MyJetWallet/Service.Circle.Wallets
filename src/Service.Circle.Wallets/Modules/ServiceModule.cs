@@ -8,6 +8,7 @@ namespace Service.Circle.Wallets.Modules
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterCircleCardsClient(Program.Settings.CircleSignerGrpcServiceUrl);
+            builder.RegisterCircleBankAccountsClient(Program.Settings.CircleSignerGrpcServiceUrl);
         }
     }
 }

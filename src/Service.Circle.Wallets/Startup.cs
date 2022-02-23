@@ -51,6 +51,7 @@ namespace Service.Circle.Wallets
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcSchema<CircleCardsService, ICircleCardsService>();
+                endpoints.MapGrpcSchema<CircleBankAccountsService, ICircleBankAccountsService>();
                 endpoints.MapGrpcSchemaRegistry();
 
                 endpoints.MapGet("/",
