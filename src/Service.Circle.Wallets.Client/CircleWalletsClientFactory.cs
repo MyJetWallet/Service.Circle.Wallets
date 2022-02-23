@@ -8,6 +8,7 @@ using MyJetWallet.Sdk.GrpcMetrics;
 using MyNoSqlServer.DataReader;
 using ProtoBuf.Grpc.Client;
 using Service.Circle.Wallets.Domain.Models;
+using Service.Circle.Wallets.Domain.Models.WireTransfers;
 using Service.Circle.Wallets.Grpc;
 
 namespace Service.Circle.Wallets.Client
@@ -17,11 +18,15 @@ namespace Service.Circle.Wallets.Client
     {
         private readonly CallInvoker _channel;
         private readonly MyNoSqlReadRepository<CircleCardNoSqlEntity> _reader;
+        private readonly MyNoSqlReadRepository<CircleBankAccountNoSqlEntity> _bankAccountsReader;
 
-        public CircleWalletsClientFactory(string grpcServiceUrl, MyNoSqlReadRepository<CircleCardNoSqlEntity> reader) :
+        public CircleWalletsClientFactory(string grpcServiceUrl, 
+            MyNoSqlReadRepository<CircleCardNoSqlEntity> cardsReader,
+            MyNoSqlReadRepository<CircleBankAccountNoSqlEntity> bankAccountsReader) :
             base(grpcServiceUrl)
         {
-            _reader = reader;
+            _reader = cardsReader;
+            this._bankAccountsReader = bankAccountsReader;
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             var channel = GrpcChannel.ForAddress(grpcServiceUrl);
             _channel = channel.Intercept(new PrometheusMetricsInterceptor());
@@ -31,5 +36,10 @@ namespace Service.Circle.Wallets.Client
             _reader != null
                 ? new NoSqlCircleCardsService(_channel.CreateGrpcService<ICircleCardsService>(), _reader)
                 : _channel.CreateGrpcService<ICircleCardsService>();
+
+        public ICircleBankAccountsService GetCircleBankAccountsService() =>
+            _reader != null
+                ? new NoSqlCircleBankAccountsService(_channel.CreateGrpcService<ICircleBankAccountsService>(), _bankAccountsReader)
+                : _channel.CreateGrpcService<ICircleBankAccountsService>();
     }
 }

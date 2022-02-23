@@ -2,6 +2,7 @@
 using MyNoSqlServer.Abstractions;
 using MyNoSqlServer.DataReader;
 using Service.Circle.Wallets.Domain.Models;
+using Service.Circle.Wallets.Domain.Models.WireTransfers;
 using Service.Circle.Wallets.Grpc;
 
 // ReSharper disable UnusedMember.Global
@@ -20,7 +21,10 @@ namespace Service.Circle.Wallets.Client
             var subs = new MyNoSqlReadRepository<CircleCardNoSqlEntity>(myNoSqlSubscriber,
                 CircleCardNoSqlEntity.TableName);
 
-            var factory = new CircleWalletsClientFactory(grpcServiceUrl, subs);
+            var subBanks = new MyNoSqlReadRepository<CircleBankAccountNoSqlEntity>(myNoSqlSubscriber,
+                CircleBankAccountNoSqlEntity.TableName);
+
+            var factory = new CircleWalletsClientFactory(grpcServiceUrl, subs, subBanks);
 
             builder
                 .RegisterInstance(subs)
@@ -28,8 +32,19 @@ namespace Service.Circle.Wallets.Client
                 .SingleInstance();
 
             builder
+               .RegisterInstance(subBanks)
+               .As<IMyNoSqlServerDataReader<CircleBankAccountNoSqlEntity>>()
+               .SingleInstance();
+
+            builder
                 .RegisterInstance(factory.GetCircleCardsService())
                 .As<ICircleCardsService>()
+                .AutoActivate()
+                .SingleInstance();
+
+            builder
+                .RegisterInstance(factory.GetCircleBankAccountsService())
+                .As<ICircleBankAccountsService>()
                 .AutoActivate()
                 .SingleInstance();
         }
@@ -40,13 +55,19 @@ namespace Service.Circle.Wallets.Client
         /// </summary>
         public static void RegisterCircleWalletsClientWithoutCache(this ContainerBuilder builder, string grpcServiceUrl)
         {
-            var factory = new CircleWalletsClientFactory(grpcServiceUrl, null);
+            var factory = new CircleWalletsClientFactory(grpcServiceUrl, null, null);
 
             builder
                 .RegisterInstance(factory.GetCircleCardsService())
                 .As<ICircleCardsService>()
                 .AutoActivate()
                 .SingleInstance();
+
+            builder
+               .RegisterInstance(factory.GetCircleBankAccountsService())
+               .As<ICircleBankAccountsService>()
+               .AutoActivate()
+               .SingleInstance();
         }
     }
 }
