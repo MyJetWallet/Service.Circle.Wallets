@@ -23,15 +23,19 @@ namespace Service.Circle.Wallets.Services
         private readonly ILogger<CircleCardsService> _logger;
         private readonly DbContextOptionsBuilder<DatabaseContext> _dbContextOptionsBuilder;
         private readonly IMyNoSqlServerDataWriter<CircleCardNoSqlEntity> _writer;
+        private readonly IMyNoSqlServerDataWriter<CircleCardPaymentDetailsNoSqlEntity> _writerPayments;
         private readonly ICircleSignerCardsService _circleCardsService;
 
         public CircleCardsService(ILogger<CircleCardsService> logger,
             DbContextOptionsBuilder<DatabaseContext> dbContextOptionsBuilder,
-            IMyNoSqlServerDataWriter<CircleCardNoSqlEntity> writer, ICircleSignerCardsService circleCardsService)
+            IMyNoSqlServerDataWriter<CircleCardNoSqlEntity> writer,
+            IMyNoSqlServerDataWriter<CircleCardPaymentDetailsNoSqlEntity> writerPayments,
+            ICircleSignerCardsService circleCardsService)
         {
             _logger = logger;
             _dbContextOptionsBuilder = dbContextOptionsBuilder;
             _writer = writer;
+            _writerPayments = writerPayments;
             _circleCardsService = circleCardsService;
         }
 
@@ -255,6 +259,34 @@ namespace Service.Circle.Wallets.Services
                 _logger.LogInformation("Unable to delete Circle card due to {error}", ex.Message);
                 return Grpc.Models.Response<bool>.Error(ex.Message);
             }
+        }
+
+        public async Task<Grpc.Models.Response<bool>> UpdateCardPaymentDetails(CircleCardPaymentDetails request)
+        {
+            var entity = CircleCardPaymentDetailsNoSqlEntity.Create(request);
+            await _writerPayments.InsertOrReplaceAsync(entity);
+
+            return Grpc.Models.Response<bool>.Success(true);
+        }
+
+        public async Task<Grpc.Models.Response<CircleCardPaymentDetails>> GetCardPaymentDetails()
+        {
+            var list = await _writerPayments.GetAsync();
+            var details = list.FirstOrDefault()?.Details;
+
+            if (details == null)
+            {
+                _logger.LogError("Payments details does not configured!");
+                details = new CircleCardPaymentDetails()
+                {
+                    FeePercentage = 3.5m,
+                    MinAmount = 10m,
+                    MaxAmount = 1000m,
+                    SettlementAsset = "USDC"
+                };
+            }
+
+            return Grpc.Models.Response<CircleCardPaymentDetails>.Success(details);
         }
 
         private CircleCardStatus ConvertCardStatus(CardStatus status)

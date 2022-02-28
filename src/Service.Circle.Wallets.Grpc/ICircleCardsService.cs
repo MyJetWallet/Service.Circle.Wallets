@@ -20,5 +20,11 @@ namespace Service.Circle.Wallets.Grpc
 
         [OperationContract]
         Task<Response<bool>> DeleteCircleCard(DeleteClientCardRequest request);
+        
+        [OperationContract]
+        Task<Response<bool>> UpdateCardPaymentDetails(CircleCardPaymentDetails request);
+        
+        [OperationContract]
+        Task<Response<CircleCardPaymentDetails>> GetCardPaymentDetails();
     }
 }

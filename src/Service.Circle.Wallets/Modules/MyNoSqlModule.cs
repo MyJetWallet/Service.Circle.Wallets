@@ -16,6 +16,10 @@ namespace Service.Circle.Wallets.Modules
             builder.RegisterMyNoSqlWriter<CircleBankAccountNoSqlEntity>(
                 Program.ReloadedSettings(e => e.MyNoSqlWriterUrl),
                 CircleBankAccountNoSqlEntity.TableName);
+
+            builder.RegisterMyNoSqlWriter<CircleCardPaymentDetailsNoSqlEntity>(
+                Program.ReloadedSettings(e => e.MyNoSqlWriterUrl),
+                CircleCardPaymentDetailsNoSqlEntity.TableName);
         }
     }
 }

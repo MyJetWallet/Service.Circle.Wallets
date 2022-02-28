@@ -54,5 +54,15 @@ namespace Service.Circle.Wallets.Client
         {
             return await _grpcService.DeleteCircleCard(request);
         }
+
+        public Task<Response<bool>> UpdateCardPaymentDetails(CircleCardPaymentDetails request)
+        {
+            return _grpcService.UpdateCardPaymentDetails(request);
+        }
+
+        public Task<Response<CircleCardPaymentDetails>> GetCardPaymentDetails()
+        {
+            return _grpcService.GetCardPaymentDetails();
+        }
     }
 }
