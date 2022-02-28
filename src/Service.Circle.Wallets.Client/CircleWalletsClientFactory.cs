@@ -26,7 +26,7 @@ namespace Service.Circle.Wallets.Client
             base(grpcServiceUrl)
         {
             _reader = cardsReader;
-            this._bankAccountsReader = bankAccountsReader;
+            _bankAccountsReader = bankAccountsReader;
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             var channel = GrpcChannel.ForAddress(grpcServiceUrl);
             _channel = channel.Intercept(new PrometheusMetricsInterceptor());
@@ -38,7 +38,7 @@ namespace Service.Circle.Wallets.Client
                 : _channel.CreateGrpcService<ICircleCardsService>();
 
         public ICircleBankAccountsService GetCircleBankAccountsService() =>
-            _reader != null
+            _bankAccountsReader != null
                 ? new NoSqlCircleBankAccountsService(_channel.CreateGrpcService<ICircleBankAccountsService>(), _bankAccountsReader)
                 : _channel.CreateGrpcService<ICircleBankAccountsService>();
     }
