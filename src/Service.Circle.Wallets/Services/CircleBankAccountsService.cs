@@ -202,8 +202,8 @@ namespace Service.Circle.Wallets.Services
                     TrackingRef = response.Data.TrackingRef,
                     Error = response.ErrorMessage,
                     IsActive = false,
-                    CreateDate = response.Data.CreateDate.UtcDateTime,
-                    UpdateDate = response.Data.UpdateDate.UtcDateTime
+                    CreateDate = response.Data.CreateDate,
+                    UpdateDate = response.Data.UpdateDate
                 };
 
                 await ctx.AddAsync(entity);
