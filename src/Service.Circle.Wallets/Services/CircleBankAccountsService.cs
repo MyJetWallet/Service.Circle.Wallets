@@ -48,7 +48,7 @@ namespace Service.Circle.Wallets.Services
                         CircleBankAccountNoSqlEntity.GenerateRowKey(request.ClientId));
                     if (cachedBankAccounts != null)
                     {
-                        var cached = cachedBankAccounts.BankAccounts.Find(e => e.Id == request.BankAccountId && e.IsActive);
+                        var cached = cachedBankAccounts.BankAccounts.Find(e => e.BankAccountId == request.BankAccountId && e.IsActive);
                         return cached != null
                             ? Grpc.Models.Response<CircleBankAccount>.Success(cached)
                             : Grpc.Models.Response<CircleBankAccount>.Error("BankAccount not found");
@@ -201,7 +201,7 @@ namespace Service.Circle.Wallets.Services
                     FingerPrint = response.Data.Fingerprint,
                     TrackingRef = response.Data.TrackingRef,
                     Error = response.ErrorMessage,
-                    IsActive = false,
+                    IsActive = true,
                     CreateDate = response.Data.CreateDate,
                     UpdateDate = response.Data.UpdateDate
                 };
