@@ -21,5 +21,8 @@ namespace Service.Circle.Wallets.Grpc
 
         [OperationContract]
         Task<Response<bool>> DeleteCircleBankAccount(DeleteClientBankAccountRequest request);
+
+        [OperationContract]
+        Task<Response<CircleBankWireTransferDetails>> GetCircleBankWireTransferDetails(GetCircleBankWireTransferDetailsRequest request);
     }
 }

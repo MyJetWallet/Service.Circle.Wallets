@@ -277,5 +277,36 @@ namespace Service.Circle.Wallets.Services
                 return Grpc.Models.Response<bool>.Error(ex.Message);
             }
         }
+
+        public async Task<Grpc.Models.Response<Grpc.Models.BankAccounts.CircleBankWireTransferDetails>> GetCircleBankWireTransferDetails(GetCircleBankWireTransferDetailsRequest request)
+        {
+            try
+            {
+                var response = await _circleBankAccountsService.GetBankWireTransferDetails(new()
+                {
+                    BankAccountId = request.BankAccountId,
+                    BrokerId = request.BrokerId,
+                });
+
+                if (!response.IsSuccess)
+                {
+                    _logger.LogInformation("Unable to CircleBankWireTransferDetails to {error}", response.ErrorMessage);
+
+                    return Grpc.Models.Response<Grpc.Models.BankAccounts.CircleBankWireTransferDetails>.Error(response.ErrorMessage);
+                }
+
+                return Grpc.Models.Response<Grpc.Models.BankAccounts.CircleBankWireTransferDetails>.Success(new ()
+                {
+                    Beneficiary = response.Data.Beneficiary,
+                    BeneficiaryBank = response.Data.BeneficiaryBank,
+                    TrackingRef = response.Data.TrackingRef,
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Unable to GetCircleBankWireTransferDetails due to {error}", ex.Message);
+                return Grpc.Models.Response<Grpc.Models.BankAccounts.CircleBankWireTransferDetails>.Error(ex.Message);
+            }
+        }
     }
 }

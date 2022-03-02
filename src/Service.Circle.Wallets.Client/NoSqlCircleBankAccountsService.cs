@@ -56,5 +56,10 @@ namespace Service.Circle.Wallets.Client
         {
             return _grpcService.DeleteCircleBankAccount(request);
         }
+
+        public Task<Response<CircleBankWireTransferDetails>> GetCircleBankWireTransferDetails(GetCircleBankWireTransferDetailsRequest request)
+        {
+            return _grpcService.GetCircleBankWireTransferDetails(request);
+        }
     }
 }
