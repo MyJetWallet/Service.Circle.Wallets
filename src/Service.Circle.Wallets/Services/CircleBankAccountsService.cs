@@ -67,7 +67,7 @@ namespace Service.Circle.Wallets.Services
                 {
                     var entity = CircleBankAccountNoSqlEntity.Create(request.BrokerId, request.ClientId,
                         accounts.ConvertAll(e => new CircleBankAccount(e)));
-                    await _writer.InsertAsync(entity);
+                    await _writer.InsertOrReplaceAsync(entity);
                 }
 
                 var account = accounts.Find(e => e.BankAccountId == request.BankAccountId && e.IsActive);
@@ -109,7 +109,7 @@ namespace Service.Circle.Wallets.Services
                 {
                     var entity = CircleBankAccountNoSqlEntity.Create(request.BrokerId, request.ClientId,
                         clientCards.ConvertAll(e => new CircleBankAccount(e)));
-                    await _writer.InsertAsync(entity);
+                    await _writer.InsertOrReplaceAsync(entity);
                 }
 
                 return Grpc.Models.Response<List<CircleBankAccount>>.Success(clientCards.ConvertAll(e => new CircleBankAccount(e)));
@@ -223,7 +223,7 @@ namespace Service.Circle.Wallets.Services
                     {
                         var cache = CircleBankAccountNoSqlEntity.Create(request.BrokerId, request.ClientId,
                             new List<CircleBankAccount> { entity });
-                        await _writer.InsertAsync(cache);
+                        await _writer.InsertOrReplaceAsync(cache);
                     }
                 }
 
