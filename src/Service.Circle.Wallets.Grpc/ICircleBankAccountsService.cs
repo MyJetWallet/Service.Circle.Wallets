@@ -24,5 +24,8 @@ namespace Service.Circle.Wallets.Grpc
 
         [OperationContract]
         Task<Response<CircleBankWireTransferDetails>> GetCircleBankWireTransferDetails(GetCircleBankWireTransferDetailsRequest request);
+
+        [OperationContract]
+        Task<Grpc.Models.Response<CircleBankAccount>> GetCircleBankAccountByIdOnly(GetClientBankAccountByIdRequest request);
     }
 }

@@ -61,5 +61,10 @@ namespace Service.Circle.Wallets.Client
         {
             return _grpcService.GetCircleBankWireTransferDetails(request);
         }
+
+        public Task<Response<CircleBankAccount>> GetCircleBankAccountByIdOnly(GetClientBankAccountByIdRequest request)
+        {
+            return _grpcService.GetCircleBankAccountByIdOnly(request);
+        }
     }
 }

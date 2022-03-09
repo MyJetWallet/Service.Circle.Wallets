@@ -73,12 +73,31 @@ namespace Service.Circle.Wallets.Services
                 var account = accounts.Find(e => e.BankAccountId == request.BankAccountId && e.IsActive);
                 return account != null
                     ? Grpc.Models.Response<CircleBankAccount>.Success(new CircleBankAccount(account))
-                    : Grpc.Models.Response<CircleBankAccount>.Error("Card not found");
+                    : Grpc.Models.Response<CircleBankAccount>.Error("Bank not found");
             }
             catch (Exception ex)
             {
                 _logger.LogInformation("Unable to get Circle Bank account due to {error}", ex.Message);
                 return Grpc.Models.Response<CircleBankAccount>.Error(ex.Message);
+            }
+        }
+
+        public async Task<Grpc.Models.Response<CircleBankAccount>> GetCircleBankAccountByIdOnly(GetClientBankAccountByIdRequest request)
+        {
+            try
+            {
+                await using var ctx = DatabaseContext.Create(_dbContextOptionsBuilder);
+                var account = await ctx.BankAccounts
+                    .FirstOrDefaultAsync(t => t.BankAccountId == request.BankAccountId);
+
+                if (account == null) return Grpc.Models.Response<CircleBankAccount>.Error("BankAccount not found");
+
+                return Grpc.Models.Response<CircleBankAccount>.Success(account);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Unable to get Circle Bank account due to {error}", ex.Message);
+                return Grpc.Models.Response<CircleBankAccount>.TechnicalError(ex.Message);
             }
         }
 
