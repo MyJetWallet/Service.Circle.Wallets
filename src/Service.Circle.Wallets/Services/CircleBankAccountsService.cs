@@ -92,7 +92,7 @@ namespace Service.Circle.Wallets.Services
 
                 if (account == null) return Grpc.Models.Response<CircleBankAccount>.Error("BankAccount not found");
 
-                return Grpc.Models.Response<CircleBankAccount>.Success(account);
+                return Grpc.Models.Response<CircleBankAccount>.Success(new CircleBankAccount(account));
             }
             catch (Exception ex)
             {
