@@ -189,7 +189,7 @@ namespace Service.Circle.Wallets.Services
                 {
                     _logger.LogInformation("Unable to add Circle BankAccount to {error}", response.ErrorMessage);
                     
-                    return Grpc.Models.Response<CircleBankAccount>.Error(response.ErrorMessage);
+                    return Grpc.Models.Response<CircleBankAccount>.Error(response.ErrorMessage, response.StatusCode);
                 }
 
                 await using var ctx = DatabaseContext.Create(_dbContextOptionsBuilder);

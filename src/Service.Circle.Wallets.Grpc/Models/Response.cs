@@ -9,6 +9,7 @@ namespace Service.Circle.Wallets.Grpc.Models
         [DataMember(Order = 2)] public string ErrorMessage { get; set; }
         [DataMember(Order = 3)] public bool IsSuccess { get; set; }
         [DataMember(Order = 4)] public bool IsRetriable { get; set; }
+        [DataMember(Order = 5)] public int StatusCode { get; set; }
 
         public static Response<T> Success(T data)
         {
@@ -19,7 +20,7 @@ namespace Service.Circle.Wallets.Grpc.Models
             };
         }
 
-        public static Response<T> Error(string errorMessage)
+        public static Response<T> Error(string errorMessage, int statusCode = 500)
         {
             return new Response<T>()
             {
@@ -27,6 +28,7 @@ namespace Service.Circle.Wallets.Grpc.Models
                 ErrorMessage = errorMessage,
                 IsSuccess = false,
                 IsRetriable = false,
+                StatusCode = statusCode,
             };
         }
 
@@ -38,6 +40,7 @@ namespace Service.Circle.Wallets.Grpc.Models
                 ErrorMessage = errorMessage,
                 IsSuccess = false,
                 IsRetriable = true,
+                StatusCode = 500,
             };
         }
     }
