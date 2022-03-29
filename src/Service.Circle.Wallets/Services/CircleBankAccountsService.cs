@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MyJetWallet.Circle.Models.Cards;
+using MyJetWallet.Sdk.Service;
 using MyNoSqlServer.Abstractions;
 using Service.Circle.Signer.Grpc.Models;
 using Service.Circle.Wallets.Domain.Models;
@@ -250,7 +251,7 @@ namespace Service.Circle.Wallets.Services
             }
             catch (Exception ex)
             {
-                _logger.LogInformation("Unable to add Circle card due to {error}", ex.Message);
+                _logger.LogError(ex, "Unable to add Circle bank account. {context}", request.ToJson());
                 return Grpc.Models.Response<CircleBankAccount>.Error(ex.Message);
             }
         }
