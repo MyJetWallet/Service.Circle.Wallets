@@ -249,6 +249,11 @@ namespace Service.Circle.Wallets.Services
 
                 return Grpc.Models.Response<CircleBankAccount>.Success(new CircleBankAccount(entity));
             }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex) when (ex.InnerException != null)
+            {
+                _logger.LogError(ex, "Unable to add Circle bank account. Already exists {context}", request.ToJson());
+                return Grpc.Models.Response<CircleBankAccount>.Error("AlreadyExists", 400);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unable to add Circle bank account. {context}", request.ToJson());
