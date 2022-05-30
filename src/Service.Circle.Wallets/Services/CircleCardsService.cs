@@ -153,7 +153,7 @@ namespace Service.Circle.Wallets.Services
                 CircleCardEntity clientCardEntity;
                 if (!response.IsSuccess)
                 {
-                    _logger.LogInformation("Unable to add Circle card due to {error} - request: {request}", 
+                    _logger.LogError("Unable to add Circle card due to {error} - request: {request}", 
                         response.ErrorMessage,
                         request.ToJson());
                     clientCardEntity = new CircleCardEntity
