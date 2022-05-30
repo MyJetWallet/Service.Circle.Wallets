@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MyJetWallet.Circle.Models.Cards;
+using MyJetWallet.Sdk.Service;
 using MyNoSqlServer.Abstractions;
 using Service.Circle.Signer.Grpc.Models;
 using Service.Circle.Wallets.Domain.Models;
@@ -152,7 +153,9 @@ namespace Service.Circle.Wallets.Services
                 CircleCardEntity clientCardEntity;
                 if (!response.IsSuccess)
                 {
-                    _logger.LogInformation("Unable to add Circle card due to {error}", response.ErrorMessage);
+                    _logger.LogInformation("Unable to add Circle card due to {error} - request: {request}", 
+                        response.ErrorMessage,
+                        request.ToJson());
                     clientCardEntity = new CircleCardEntity
                     {
                         Id = Guid.NewGuid().ToString(),
