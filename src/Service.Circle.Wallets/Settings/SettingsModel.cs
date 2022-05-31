@@ -25,5 +25,8 @@ namespace Service.Circle.Wallets.Settings
 
         [YamlProperty("CircleWallets.MyNoSqlReaderHostPort")]
         public string MyNoSqlReaderHostPort { get; set; }
+
+        [YamlProperty("CircleWallets.SpotServiceBusHostPort")]
+        public string SpotServiceBusHostPort { get; set; }
     }
 }

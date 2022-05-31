@@ -161,7 +161,6 @@ namespace Service.Circle.Wallets.Services
                         Id = Guid.NewGuid().ToString(),
                         BrokerId = request.BrokerId,
                         ClientId = request.ClientId,
-                        CardName = request.CardName,
                         Status = CircleCardStatus.Failed,
                         Error = response.ErrorMessage,
                         IsActive = false,
