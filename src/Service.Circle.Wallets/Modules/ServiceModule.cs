@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using MyJetWallet.Sdk.ServiceBus;
 using Service.Circle.Signer.Client;
+using Service.Circle.Wallets.Subscribers;
 using Service.Circle.Webhooks.Domain.Models;
 
 namespace Service.Circle.Wallets.Modules
