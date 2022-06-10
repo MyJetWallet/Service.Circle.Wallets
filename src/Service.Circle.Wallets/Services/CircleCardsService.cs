@@ -216,7 +216,7 @@ namespace Service.Circle.Wallets.Services
             }
             catch (Exception ex)
             {
-                _logger.LogInformation("Unable to add Circle card due to {error}", ex.Message);
+                _logger.LogError("Unable to add Circle card due to {error}", ex.Message);
                 return Grpc.Models.Response<CircleCard>.Error(ex.Message);
             }
         }

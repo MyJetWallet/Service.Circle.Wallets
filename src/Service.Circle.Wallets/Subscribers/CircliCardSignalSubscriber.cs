@@ -35,10 +35,16 @@ namespace Service.Circle.Wallets.Subscribers
         {
             try
             {
-                _logger.LogInformation("Processing SignalCircleCard due to {error}", cardSignal.ToJson());
+                _logger.LogInformation("Processing SignalCircleCard {card}", cardSignal.ToJson());
 
                 await using var ctx = DatabaseContext.Create(_dbContextOptionsBuilder);
                 var card = await ctx.Cards.FirstOrDefaultAsync(x => x.CircleCardId == cardSignal.CircleCardId);
+
+                if (card == null)
+                {
+                    _logger.LogError("Processing SignalCircleCard does not exist. {error}", cardSignal.ToJson());
+                    return;
+                }
 
                 if (cardSignal.Verified)
                 {
