@@ -15,6 +15,6 @@ namespace Service.Circle.Wallets.Domain.Models
         [DataMember(Order = 6)] public decimal Day1Limit { get; set; }
         [DataMember(Order = 7)] public decimal Day7Limit { get; set; }
         [DataMember(Order = 8)] public decimal Day30Limit { get; set; }
-
+        [DataMember(Order = 9)] public decimal MinReserveWithdrawalAmount { get; set; }
     }
 }

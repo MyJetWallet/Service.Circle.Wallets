@@ -288,6 +288,7 @@ namespace Service.Circle.Wallets.Services
                     Day1Limit = 1000m,
                     Day7Limit = 3000m,
                     Day30Limit = 12000m,
+                    MinReserveWithdrawalAmount = 300m
                 };
             }
 
