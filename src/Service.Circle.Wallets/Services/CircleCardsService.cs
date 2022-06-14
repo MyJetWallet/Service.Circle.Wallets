@@ -279,12 +279,15 @@ namespace Service.Circle.Wallets.Services
             if (details == null)
             {
                 _logger.LogError("Payments details does not configured!");
-                details = new CircleCardPaymentDetails()
+                details = new CircleCardPaymentDetails
                 {
                     FeePercentage = 3.5m,
                     MinAmount = 10m,
                     MaxAmount = 1000m,
-                    SettlementAsset = "USDC"
+                    SettlementAsset = "USDC",
+                    Day1Limit = 1000m,
+                    Day7Limit = 3000m,
+                    Day30Limit = 12000m,
                 };
             }
 

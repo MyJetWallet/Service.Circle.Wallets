@@ -12,5 +12,9 @@ namespace Service.Circle.Wallets.Domain.Models
         [DataMember(Order = 4)] public string SettlementAsset { get; set; }
         // fix part in circle fee for the transaction
         [DataMember(Order = 5)] public decimal FixFeeAmount { get; set; }
+        [DataMember(Order = 6)] public decimal Day1Limit { get; set; }
+        [DataMember(Order = 7)] public decimal Day7Limit { get; set; }
+        [DataMember(Order = 8)] public decimal Day30Limit { get; set; }
+
     }
 }
