@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MyJetWallet.Circle" Version="1.9.6" />
-    <PackageReference Include="MyJetWallet.Sdk.NoSql" Version="2.2.5" />
+    <PackageReference Include="MyJetWallet.Circle" Version="1.10.0" />
+    <PackageReference Include="MyJetWallet.Sdk.NoSql" Version="2.2.7" />
   </ItemGroup>
 
 </Project>
