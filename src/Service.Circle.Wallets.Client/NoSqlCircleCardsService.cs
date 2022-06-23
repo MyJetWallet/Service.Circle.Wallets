@@ -64,5 +64,10 @@ namespace Service.Circle.Wallets.Client
         {
             return _grpcService.GetCardPaymentDetails();
         }
+
+        public Task<Response<CircleCard>> ReloadCircleCard(ReloadClientCardRequest request)
+        {
+            return _grpcService.ReloadCircleCard(request);
+        }
     }
 }

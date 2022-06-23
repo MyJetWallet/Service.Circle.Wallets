@@ -13,6 +13,8 @@ using Service.Circle.Wallets.Grpc;
 using Service.Circle.Wallets.Grpc.Models;
 using Service.Circle.Wallets.Postgres;
 using Service.Circle.Wallets.Postgres.Models;
+using Service.Circle.Wallets.Subscribers;
+using Service.Circle.Webhooks.Domain.Models;
 using ICircleSignerCardsService = Service.Circle.Signer.Grpc.ICircleCardsService;
 
 // ReSharper disable InconsistentLogPropertyNaming
@@ -213,6 +215,52 @@ namespace Service.Circle.Wallets.Services
                 }
 
                 return Grpc.Models.Response<CircleCard>.Success(new CircleCard(clientCardEntity));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Unable to add Circle card due to {error}", ex.Message);
+                return Grpc.Models.Response<CircleCard>.Error(ex.Message);
+            }
+        }
+
+        public async Task<Grpc.Models.Response<CircleCard>> ReloadCircleCard(ReloadClientCardRequest request)
+        {
+            try
+            {
+                var response = await _circleCardsService.GetCircleCard(
+                    new GetCardRequest
+                    {
+                        BrokerId = request.BrokerId,
+                        CardId = request.CircleCardId
+                    });
+
+                await using var ctx = DatabaseContext.Create(_dbContextOptionsBuilder);
+                var card = await ctx.Cards.FirstOrDefaultAsync(x => x.CircleCardId == request.CircleCardId);
+                if (!response.IsSuccess)
+                {
+                    _logger.LogError("Unable to reload Circle card due to {error} - request: {request}",
+                        response.ErrorMessage,
+                        request.ToJson());
+
+                    return Grpc.Models.Response<CircleCard>.Error(response.ErrorMessage);
+                }
+
+                var signal = new SignalCircleCard
+                {
+                    CircleCardId = response.Data.Id,
+                    Status = response.Data.Status,
+                    ErrorCode = response.Data.ErrorCode,
+                    Bin = response.Data.Bin,
+                    Fingerprint = response.Data.Fingerprint,
+                    FundingType = response.Data.FundingType,
+                    IssuerCountry = response.Data.IssuerCountry,
+                    RiskEvaluation = response.Data.RiskEvaluation,
+                    UpdateDate = response.Data.UpdateDate,
+                };
+                var logic = new UpdateCircleCardSharedLogic();
+                card = await logic.ExecuteAsync(ctx, _writer, signal, card);
+
+                return Grpc.Models.Response<CircleCard>.Success(new CircleCard(card));
             }
             catch (Exception ex)
             {
