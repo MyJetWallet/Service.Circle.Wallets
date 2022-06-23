@@ -46,19 +46,33 @@ namespace Service.Circle.Wallets.Subscribers
                     return;
                 }
 
-                if (cardSignal.Verified)
+                card.UpdateDate = cardSignal.UpdateDate;
+                card.Bin = cardSignal.Bin;
+                card.FingerPrint = cardSignal.Fingerprint;
+                card.RiskEvaluation = cardSignal.RiskEvaluation;
+                card.FundingType = cardSignal.FundingType;
+                card.IssuerCountry = cardSignal.IssuerCountry;
+
+                switch (cardSignal.Status)
                 {
-                    card.Status = CircleCardStatus.Complete;
-                    card.UpdateDate = DateTime.UtcNow;
-                }
-                else
-                {
-                    card.Status = CircleCardStatus.Failed;
-                    card.UpdateDate = DateTime.UtcNow;
-                    card.IsActive = false;
+                    case MyJetWallet.Circle.Models.Cards.CardStatus.Pending:
+                        card.Status = CircleCardStatus.Pending;
+                        break;
+                    case MyJetWallet.Circle.Models.Cards.CardStatus.Complete:
+                        card.Status = CircleCardStatus.Complete;
+                        break;
+                    case MyJetWallet.Circle.Models.Cards.CardStatus.Failed:
+                        card.Status = CircleCardStatus.Failed;
+                        card.IsActive = false;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(cardSignal.Status), cardSignal.Status, null);
                 }
 
-                await ctx.Cards.Upsert(card).On(e => e.CircleCardId).RunAsync();
+                await ctx.Cards.Upsert(card)
+                    .On(e => e.CircleCardId)
+                    .UpdateIf(e => e.UpdateDate <= card.UpdateDate)
+                    .RunAsync();
                 await ctx.SaveChangesAsync();
 
 

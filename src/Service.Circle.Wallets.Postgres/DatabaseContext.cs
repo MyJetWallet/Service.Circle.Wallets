@@ -85,6 +85,7 @@ namespace Service.Circle.Wallets.Postgres
             modelBuilder.Entity<CircleCardEntity>().HasIndex(e => new { e.BrokerId, e.ClientId });
             modelBuilder.Entity<CircleCardEntity>().HasIndex(e => new { e.BrokerId, e.ClientId, e.IsActive });
             modelBuilder.Entity<CircleCardEntity>().HasIndex(e => e.CircleCardId).IsUnique();
+            modelBuilder.Entity<CircleCardEntity>().OwnsOne(e => e.RiskEvaluation);
         }
 
         public async Task<int> InsertAsync(CircleCardEntity entity)

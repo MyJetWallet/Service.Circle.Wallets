@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using JetBrains.Annotations;
+using MyJetWallet.Circle.Models;
+using MyJetWallet.Circle.Models.Cards;
 
 namespace Service.Circle.Wallets.Domain.Models
 {
@@ -9,7 +11,8 @@ namespace Service.Circle.Wallets.Domain.Models
     {
         public CircleCard(string id, string brokerId, string clientId, string cardName, [CanBeNull] string circleCardId,
             [CanBeNull] string last4, [CanBeNull] string network, int? expMonth, int? expYear, CircleCardStatus status,
-            string? error, bool isActive, DateTime createDate, DateTime updateDate)
+            string? error, bool isActive, DateTime createDate, DateTime updateDate,
+            string bin, string fingerPrint, RiskEvaluation riskEvaluation, CardFundingType fundingType, string issuerCountry)
         {
             Id = id;
             BrokerId = brokerId;
@@ -25,6 +28,11 @@ namespace Service.Circle.Wallets.Domain.Models
             IsActive = isActive;
             CreateDate = createDate;
             UpdateDate = updateDate;
+            Bin = bin;
+            FingerPrint = fingerPrint;
+            RiskEvaluation = riskEvaluation;
+            FundingType = fundingType;
+            IssuerCountry = issuerCountry;
         }
 
         public CircleCard(CircleCard card)
@@ -43,6 +51,11 @@ namespace Service.Circle.Wallets.Domain.Models
             IsActive = card.IsActive;
             CreateDate = card.CreateDate;
             UpdateDate = card.UpdateDate;
+            Bin = card.Bin;
+            FingerPrint = card.FingerPrint;
+            RiskEvaluation = card.RiskEvaluation;
+            FundingType = card.FundingType;
+            IssuerCountry = card.IssuerCountry;
         }
 
         public CircleCard()
@@ -63,5 +76,10 @@ namespace Service.Circle.Wallets.Domain.Models
         [DataMember(Order = 12)] public bool IsActive { get; set; }
         [DataMember(Order = 13)] public DateTime CreateDate { get; set; }
         [DataMember(Order = 14)] public DateTime UpdateDate { get; set; }
+        [DataMember(Order = 15)]public string Bin { get; set; }
+        [DataMember(Order = 16)]public string FingerPrint { get; set; }
+        [DataMember(Order = 17)]public RiskEvaluation RiskEvaluation { get; set; }
+        [DataMember(Order = 18)]public CardFundingType FundingType { get; set; }
+        [DataMember(Order = 19)] public string IssuerCountry { get; set; }
     }
 }

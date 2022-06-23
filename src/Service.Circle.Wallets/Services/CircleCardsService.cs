@@ -187,8 +187,8 @@ namespace Service.Circle.Wallets.Services
                     Status = ConvertCardStatus(response.Data.Status),
                     Error = ConvertCardVerificationError(response.Data.ErrorCode)?.ToString(),
                     IsActive = ConvertCardStatus(response.Data.Status) != CircleCardStatus.Failed,
-                    CreateDate = DateTime.Parse(response.Data.CreateDate),
-                    UpdateDate = DateTime.Parse(response.Data.UpdateDate)
+                    CreateDate = response.Data.CreateDate,
+                    UpdateDate = response.Data.UpdateDate
                 };
 
                 await ctx.AddAsync(clientCardEntity);
