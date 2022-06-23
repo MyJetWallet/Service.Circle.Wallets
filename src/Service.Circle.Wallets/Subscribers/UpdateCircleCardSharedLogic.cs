@@ -22,6 +22,7 @@ namespace Service.Circle.Wallets.Subscribers
             card.RiskEvaluation = cardSignal.RiskEvaluation;
             card.FundingType = cardSignal.FundingType;
             card.IssuerCountry = cardSignal.IssuerCountry;
+            card.ErrorCode = cardSignal.ErrorCode;
 
             switch (cardSignal.Status)
             {

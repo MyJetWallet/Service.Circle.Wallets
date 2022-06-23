@@ -12,7 +12,7 @@ namespace Service.Circle.Wallets.Domain.Models
         public CircleCard(string id, string brokerId, string clientId, string cardName, [CanBeNull] string circleCardId,
             [CanBeNull] string last4, [CanBeNull] string network, int? expMonth, int? expYear, CircleCardStatus status,
             string? error, bool isActive, DateTime createDate, DateTime updateDate,
-            string bin, string fingerPrint, RiskEvaluation riskEvaluation, CardFundingType fundingType, string issuerCountry)
+            string bin, string fingerPrint, RiskEvaluation riskEvaluation, CardFundingType fundingType, string issuerCountry, CardVerificationError? errorCode)
         {
             Id = id;
             BrokerId = brokerId;
@@ -33,6 +33,7 @@ namespace Service.Circle.Wallets.Domain.Models
             RiskEvaluation = riskEvaluation;
             FundingType = fundingType;
             IssuerCountry = issuerCountry;
+            ErrorCode = errorCode;
         }
 
         public CircleCard(CircleCard card)
@@ -56,6 +57,7 @@ namespace Service.Circle.Wallets.Domain.Models
             RiskEvaluation = card.RiskEvaluation;
             FundingType = card.FundingType;
             IssuerCountry = card.IssuerCountry;
+            ErrorCode = card.ErrorCode;
         }
 
         public CircleCard()
@@ -66,9 +68,9 @@ namespace Service.Circle.Wallets.Domain.Models
         [DataMember(Order = 2)] public string BrokerId { get; set; }
         [DataMember(Order = 3)] public string ClientId { get; set; }
         [DataMember(Order = 4)] public string CardName { get; set; }
-        [DataMember(Order = 5)] [CanBeNull] public string CircleCardId { get; set; }
-        [DataMember(Order = 6)] [CanBeNull] public string Last4 { get; set; }
-        [DataMember(Order = 7)] [CanBeNull] public string Network { get; set; }
+        [DataMember(Order = 5)][CanBeNull] public string CircleCardId { get; set; }
+        [DataMember(Order = 6)][CanBeNull] public string Last4 { get; set; }
+        [DataMember(Order = 7)][CanBeNull] public string Network { get; set; }
         [DataMember(Order = 8)] public int? ExpMonth { get; set; }
         [DataMember(Order = 9)] public int? ExpYear { get; set; }
         [DataMember(Order = 10)] public CircleCardStatus Status { get; set; }
@@ -76,10 +78,11 @@ namespace Service.Circle.Wallets.Domain.Models
         [DataMember(Order = 12)] public bool IsActive { get; set; }
         [DataMember(Order = 13)] public DateTime CreateDate { get; set; }
         [DataMember(Order = 14)] public DateTime UpdateDate { get; set; }
-        [DataMember(Order = 15)]public string Bin { get; set; }
-        [DataMember(Order = 16)]public string FingerPrint { get; set; }
-        [DataMember(Order = 17)]public RiskEvaluation RiskEvaluation { get; set; }
-        [DataMember(Order = 18)]public CardFundingType FundingType { get; set; }
+        [DataMember(Order = 15)] public string Bin { get; set; }
+        [DataMember(Order = 16)] public string FingerPrint { get; set; }
+        [DataMember(Order = 17)] public RiskEvaluation RiskEvaluation { get; set; }
+        [DataMember(Order = 18)] public CardFundingType FundingType { get; set; }
         [DataMember(Order = 19)] public string IssuerCountry { get; set; }
+        [DataMember(Order = 20)] public CardVerificationError? ErrorCode { get; set; }
     }
 }
