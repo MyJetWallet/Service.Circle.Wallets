@@ -86,6 +86,25 @@ namespace Service.Circle.Wallets.Services
             }
         }
 
+        public async Task<Grpc.Models.Response<CircleCard>> GetCardByCircleId(GetCardByCircleIdRequest request)
+        {
+            try
+            {
+                await using var ctx = DatabaseContext.Create(_dbContextOptionsBuilder);
+                var clientCard = await ctx.Cards
+                    .FirstOrDefaultAsync(t => t.CircleCardId == request.CircleCardId);
+
+                return clientCard != null
+                    ? Grpc.Models.Response<CircleCard>.Success(new CircleCard(clientCard))
+                    : Grpc.Models.Response<CircleCard>.Error("Card not found");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Unable to get Circle card due to {error}", ex.Message);
+                return Grpc.Models.Response<CircleCard>.Error(ex.Message);
+            }
+        }
+
         public async Task<Grpc.Models.Response<List<CircleCard>>> GetCircleClientAllCards(
             GetClientAllCardsRequest request)
         {
@@ -374,7 +393,7 @@ namespace Service.Circle.Wallets.Services
                     return CircleCardVerificationError.CardExpired;
                 case CardVerificationError.VerificationFailed:
                 case CardVerificationError.VerificationFraudDetected:
-                case CardVerificationError.VerificationDenied:
+                case CardVerificationError.RiskDenied:
                 case CardVerificationError.VerificationNotSupportedByIssuer:
                 case CardVerificationError.VerificationStoppedByIssuer:
                 case CardVerificationError.CardInvalid:

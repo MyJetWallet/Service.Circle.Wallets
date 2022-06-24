@@ -13,6 +13,9 @@ namespace Service.Circle.Wallets.Grpc
         Task<Response<CircleCard>> GetCircleClientCard(GetClientCardRequest request);
 
         [OperationContract]
+        Task<Grpc.Models.Response<CircleCard>> GetCardByCircleId(GetCardByCircleIdRequest request);
+
+        [OperationContract]
         Task<Response<List<CircleCard>>> GetCircleClientAllCards(GetClientAllCardsRequest request);
 
         [OperationContract]

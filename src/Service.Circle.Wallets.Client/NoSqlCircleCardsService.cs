@@ -69,5 +69,10 @@ namespace Service.Circle.Wallets.Client
         {
             return _grpcService.ReloadCircleCard(request);
         }
+
+        public Task<Response<CircleCard>> GetCardByCircleId(GetCardByCircleIdRequest request)
+        {
+            return _grpcService.GetCardByCircleId(request);
+        }
     }
 }

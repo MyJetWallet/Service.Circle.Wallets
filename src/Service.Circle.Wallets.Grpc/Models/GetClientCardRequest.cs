@@ -10,4 +10,5 @@ namespace Service.Circle.Wallets.Grpc.Models
         [DataMember(Order = 3)] public string CardId { get; set; }
         [DataMember(Order = 4)] public bool OnlyActive { get; set; }
     }
+    
 }
