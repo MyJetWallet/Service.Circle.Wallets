@@ -392,16 +392,30 @@ namespace Service.Circle.Wallets.Services
                 case CardVerificationError.CardExpired:
                     return CircleCardVerificationError.CardExpired;
                 case CardVerificationError.VerificationFailed:
-                case CardVerificationError.VerificationFraudDetected:
-                case CardVerificationError.RiskDenied:
+                    return CircleCardVerificationError.VerificationFailed;
                 case CardVerificationError.VerificationNotSupportedByIssuer:
-                case CardVerificationError.VerificationStoppedByIssuer:
+                    return CircleCardVerificationError.VerificationNotSupportedByIssuer;
                 case CardVerificationError.CardInvalid:
-                case CardVerificationError.CardLimitViolated:
+                    return CircleCardVerificationError.CardInvalid;
                 case CardVerificationError.CardNotHonored:
-                case CardVerificationError.CardCvvRequired:
-                case CardVerificationError.CreditCardNotAllowed:
+                    return CircleCardVerificationError.CardNotHonored;
                 case CardVerificationError.CardAccountIneligible:
+                    return CircleCardVerificationError.CardAccountIneligible;
+                case CardVerificationError.CardLimitViolated:
+                    return CircleCardVerificationError.CardLimitViolated;
+                case CardVerificationError.CardCvvRequired:
+                    return CircleCardVerificationError.CardCvvRequired;
+                case CardVerificationError.ThreeDSecureNotSupported:
+                    return CircleCardVerificationError.ThreeDSecureNotSupported;
+                case CardVerificationError.ThreeDSecureActionExpired:
+                    return CircleCardVerificationError.ThreeDSecureActionExpired;
+                case CardVerificationError.ThreeDSecureInvalidRequest:
+                    return CircleCardVerificationError.ThreeDSecureInvalidRequest;
+                
+                case CardVerificationError.CreditCardNotAllowed:
+                case CardVerificationError.VerificationFraudDetected:
+                case CardVerificationError.VerificationStoppedByIssuer:     
+                case CardVerificationError.RiskDenied:
                 case CardVerificationError.CardNetworkUnsupported:
                     _logger.LogWarning("Unsupported Card Verification error {error}", error.ToString());
                     return CircleCardVerificationError.CardFailed;

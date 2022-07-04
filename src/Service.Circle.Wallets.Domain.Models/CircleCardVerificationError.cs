@@ -2,24 +2,25 @@
 {
     public enum CircleCardVerificationError
     {
-        // VerificationFailed,
-        // VerificationFraudDetected,
-        // VerificationDenied,
-        // VerificationNotSupportedByIssuer,
-        // VerificationStoppedByIssuer,
         CardFailed,
-
-        // CardInvalid,
         CardAddressMismatch,
         CardZipMismatch,
         CardCvvInvalid,
-
-        CardExpired
-        // CardLimitViolated,
-        // CardNotHonored,
-        // CardCvvRequired,
+        CardExpired,
+        CardInvalid,
+        VerificationFailed,
+        VerificationNotSupportedByIssuer,
+        CardLimitViolated,
+        CardNotHonored,
+        CardCvvRequired,
+        CardAccountIneligible,
+        ThreeDSecureNotSupported,
+        ThreeDSecureActionExpired,
+        ThreeDSecureInvalidRequest
+        // VerificationFraudDetected,
+        // VerificationDenied,
+        // VerificationStoppedByIssuer,
         // CreditCardNotAllowed,
-        // CardAccountIneligible,
         // CardNetworkUnsupported
     }
 }
